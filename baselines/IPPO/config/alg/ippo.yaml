@@ -1,0 +1,49 @@
+"SEED": 50
+
+"LR": 0.0006
+"NUM_ENVS": 1024
+"NUM_STEPS": 128
+"TOTAL_TIMESTEPS": 1e9
+"UPDATE_EPOCHS": 8
+"NUM_MINIBATCHES": 8
+"GAMMA": 0.99
+"GAE_LAMBDA": 0.9
+"CLIP_EPS": 0.1
+"ENT_COEF": 0.02
+"VF_COEF": 0.5
+"MAX_GRAD_NORM": 0.5
+"ENV_NAME": "hanabi"
+
+
+"ENV_KWARGS": {
+  "num_agents": 2,
+  "train_pre_policy": True,
+  "intrinsic_reward_ratio": 0.035,
+  "if_augment_obs": True,
+  "convention_type": "save_5",
+}
+"ANNEAL_LR": False
+
+# WandB Params
+"HYP_TUNE": True
+"WANDB_MODE": "online"
+
+"ENTITY": "pre-policy-marl"
+"PROJECT": "marl"
+
+"NUM_PROXY_AGENTS": 1
+"OBS_ENC_HIDDEN_DIM": 128
+"TEMPERATURE": 1.0
+"NODE_FEATURE_DIM": 8
+
+
+"PRE_POLICY_HIDDEN_DIM": 256
+"PRE_POLICY_OUTPUT_DIM": 128
+
+
+
+"CONFIG_NAME": IPPO_PRE_POLICY
+
+'RUN_BASELINE': False
+
+

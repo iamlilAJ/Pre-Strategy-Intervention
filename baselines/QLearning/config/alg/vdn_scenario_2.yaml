@@ -1,0 +1,54 @@
+# valid for iql, vdn, qmix
+"TOTAL_TIMESTEPS": 2e6
+"NUM_ENVS": 8
+"NUM_STEPS": 26
+"BUFFER_SIZE": 5000
+"BUFFER_BATCH_SIZE": 32
+"HIDDEN_SIZE": 64
+
+"MIXER_EMBEDDING_DIM": 32 # just for qmix
+"MIXER_HYPERNET_HIDDEN_DIM": 128 # just for qmix
+"MIXER_INIT_SCALE": 0.001 # just for qmix
+
+"SEED": 0
+
+"EPS_START": 0.6
+"EPS_FINISH": 0.1
+"EPS_DECAY": 0.1 # percentage of updates
+"MAX_GRAD_NORM": 5
+"TARGET_UPDATE_INTERVAL": 200
+"TAU": 1.
+"NUM_EPOCHS": 1 
+"LR": 0.0045
+"LEARNING_STARTS": 10000 # timesteps
+"LR_LINEAR_DECAY": True
+"GAMMA": 0.9
+
+"INIT_SCALE": 1.0
+#"GNN_EMBEDDING_DIM": 16
+# ENV
+"ENV_NAME": "AugmentedMPE"
+"ENV_KWARGS": {
+  "train_pre_policy": True,
+  "if_augment_obs": True,
+  "intrinsic_reward_ratio": 0.2,
+  "zero_index": False
+}
+
+# evaluate
+"TEST_DURING_TRAINING": True
+"TEST_INTERVAL": 0.05 # as a fraction of updates, i.e. log every 5% of training process
+"TEST_NUM_STEPS": 30
+"TEST_NUM_ENVS": 512 # number of episodes to average over, can affect performance
+
+"LOG_AGENTS_SEPARATELY": False # iql will log indipendent agents separately
+
+"PRE_POLICY_OUTPUT_DIM": 32
+"PRE_POLICY_HIDDEN_DIM": 64
+"NODE_FEATURE_DIM": 16
+
+#Baseline
+"RUN_BASELINE": False
+
+
+"ALG_NAME": "vdn_scenario_2"

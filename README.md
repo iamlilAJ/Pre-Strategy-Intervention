@@ -46,7 +46,7 @@ python baselines/IPPO/ippo_pre.py +alg=ippo baselines.ENV_KWARGS.convention_type
 
 To run the MAPPO
 ```shell
-python baselines/MAPPO/mappo_pre_seed.py +alg=ippo
+python baselines/MAPPO/mappo_pre.py +alg=mappo
 ```
 
 PQN-VDN

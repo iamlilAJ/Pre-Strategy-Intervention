@@ -386,7 +386,7 @@ def make_train(config):
     return train
 
 def single_run(config):
-    config = {**config, **config["baselines"]}  # merge the baselines config with the main config
+    config = {**config, **config["alg"]}  # merge the baselines config with the main config
     print(config)
 
     wandb.init(
@@ -425,7 +425,7 @@ def single_run(config):
 
 
 def tune(default_config):
-    default_config = {**default_config, **default_config["baselines"]}  # merge the baselines config with the main config
+    default_config = {**default_config, **default_config["alg"]}  # merge the baselines config with the main config
 
     """Hyperparameter sweep with wandb."""
     def flatten_dict(d, parent_key='', sep='.'):

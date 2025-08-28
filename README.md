@@ -5,12 +5,12 @@ This repository contains the official JAX implementation for the NeurIPS 2025 pa
 
 ## Installation
 
-This project requires Python 3.10+ and uses `conda` for environment management.
+This project requires Python 3.10 and uses `conda` for environment management.
 
 1.  **Clone the repository:**
     ```shell
-    git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
-    cd your-repo-name
+    git clone https://github.com/iamlilAJ/Pre-Strategy-Intervention.git
+    cd Pre-Strategy-Intervention
     ```
 
 2.  **Create and activate the conda environment:**
@@ -19,17 +19,19 @@ This project requires Python 3.10+ and uses `conda` for environment management.
     conda activate intervention
     ```
 
-3.  **Install JAX with GPU support (Recommended):**
-    We strongly recommend installing JAX according to your specific CUDA version by following the [official JAX installation guide](https://github.com/google/jax#installation). For example, for CUDA 12:
-    ```shell
-    pip install -U "jax[cuda12_pip]" -f [https://storage.googleapis.com/jax-releases/jax_cuda_releases.html](https://storage.googleapis.com/jax-releases/jax_cuda_releases.html)
-    ```
-
-4.  **Install the project and dependencies:**
+3.  **Install the project and dependencies:**
     This command will install the project in editable mode along with all necessary dependencies for running the algorithms.
     ```shell
     pip install -e .[algs]
     ```
+    
+
+4. **Install JAX with GPU support (Recommended):**
+    We strongly recommend installing JAX according to your specific CUDA version by following the [official JAX installation guide](https://github.com/google/jax#installation). For example, for CUDA 12:
+    ```shell
+pip install -U "jax[cuda12_pip]==0.4.25" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
+    ```
+
 
 
 ### Hanabi

@@ -171,7 +171,7 @@ def make_train(config, env):
         rng, _rng = jax.random.split(rng)
 
         train_state = create_agent(rng)
-        # print(train_state.opt_state)
+
         # INIT BUFFER
         # to initalize the buffer is necessary to sample a trajectory to know its strucutre
         def _env_sample_step(env_state, unused):
@@ -212,8 +212,7 @@ def make_train(config, env):
             period=1,
         )
         buffer_state = buffer.init(sample_traj_unbatched)
-        #
-        # accumulated_test_state = {"accumulated_test_return": jnp.zeros((), dtype=jnp.float32)}
+
 
         # TRAINING LOOP
         def _update_step(runner_state, unused):
@@ -229,9 +228,6 @@ def make_train(config, env):
                 _obs = batchify(last_obs)[:, np.newaxis]
                 _dones = batchify(last_dones)[:, np.newaxis]
 
-                # print(f"In step env hstate shape: {hs.shape}")
-                # print(f"In step env obs shape: {_obs.shape}")
-                # print(f"In step env done shape : {_dones.shape}")
 
                 new_hs, q_vals, new_pre_hs = network.apply(
                     train_state.params,

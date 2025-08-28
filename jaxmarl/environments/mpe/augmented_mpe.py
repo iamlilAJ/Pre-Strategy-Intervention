@@ -295,22 +295,6 @@ class SimpleMPE_v2(MultiAgentEnv):
                 ),
             ]
         )
-        #
-        # # Initialize agent positions: shape (num_agents, 2)
-        # agents_pos = jax.random.uniform(
-        #     key_a, (self.num_agents, 2), minval=-1.0, maxval=+1.0
-        # )
-        #
-        # # Initialize landmark positions: shape (num_landmarks, 2)
-        landmarks_pos = jax.random.uniform(
-            key_l, (self.num_landmarks, 2), minval=-1.0, maxval=+1.0
-        )
-        #
-        # # Reorder landmarks: place the leftmost landmark first
-        # sorted_landmarks_pos = jax.lax.sort(landmarks_pos, dimension=0)
-        #
-        # # Concatenate agents' positions with sorted landmarks' positions
-        # p_pos = jnp.concatenate([agents_pos, sorted_landmarks_pos], axis=0)
 
         zero_landmark_pos = p_pos[self.num_agents:][0]  # index 0 among the landmarks
 
@@ -328,17 +312,6 @@ class SimpleMPE_v2(MultiAgentEnv):
             init_intrinsic = init_intrinsic.at[0].set(-dist0)
         else:
             init_intrinsic = jnp.zeros((self.num_agents,))
-
-        # if self.train_pre_policy:
-        #     leftmost_landmark_pos = p_pos[self.num_agents:][0]  # The leftmost landmark (first one)
-        #     # index = jnp.argmin(p_pos[self.num_agents:, 0])
-        #     # leftmost_landmark_pos = p_pos[self.num_agents:][index]
-        #
-        #     # leftmost_landmark_pos = self._get_leftmost_landmark(p_pos)
-        #     dist_to_leftmost_landmark = jnp.linalg.norm(p_pos[0] - leftmost_landmark_pos)
-        #     intrinsic_rew = -dist_to_leftmost_landmark  # Reward based on distance to the leftmost landmark
-        # else:
-        #     intrinsic_rew = 0.
 
 
         state = State(
@@ -677,10 +650,7 @@ class AugmentedMPE(SimpleMPE_v2):
             augmented_obs[a] = updated_obs
 
         return augmented_obs
-        #
-        #
-        # obs = {a: _obs(i) for i, a in enumerate(self.agents)}
-        # return obs
+
 
     def rewards(self, state: State) -> Dict[str, Tuple[float, float]]:
         @partial(jax.vmap, in_axes=(0, None))
@@ -711,8 +681,6 @@ class AugmentedMPE(SimpleMPE_v2):
             return _agent_rew(i, c) * self.local_ratio + global_rew * (1 - self.local_ratio)
 
         if self.all_agents_intrinsic and self.zero_index:
-            # 1) All agents each get an intrinsic from landmark[0].
-            #    Their final reward is (extrinsic, that_intrinsic).
 
             zero_landmark_pos = state.p_pos[self.num_agents:][0]
 
@@ -722,15 +690,6 @@ class AugmentedMPE(SimpleMPE_v2):
                 return -dist_
 
             intrinsic_vals = _intrinsic(self.agent_range)
-
-            # So each agent gets a 2-tuple: (extrinsic, intrinsic_vals[i]).
-            # Possibly ignoring our "additional_rew" for agent0?
-            # That depends on whether you want them both or not.
-            # If you'd like both, you can combine them. For example:
-            #   agent0's "intrinsic" could be 'intrinsic_vals[0] + additional_rew'.
-            # The code below just shows separate extrinsic + that intrinsic.
-            # You might integrate them carefully if needed.
-
 
             rew = {
                 a: (
@@ -742,10 +701,7 @@ class AugmentedMPE(SimpleMPE_v2):
             return rew
 
         elif self.zero_index:
-            # 2) The "old approach": landmark index=0 as special,
-            #    but only agent0 gets additional_rew (the distance).
 
-            # =========== OLD approach referencing landmark index=0 =============
             chosen_landmark_pos = state.p_pos[self.num_agents:][0]  # "leftmost" or index=0
             dist_to_chosen = jnp.linalg.norm(state.p_pos[0] - chosen_landmark_pos)
             additional_rew = -dist_to_chosen
@@ -760,9 +716,7 @@ class AugmentedMPE(SimpleMPE_v2):
             return rew
 
         else:
-            # 3) The "new approach": find the farthest-from-agent1&2 landmark.
-            #    Again only agent0 gets additional_rew.
-            # =========== NEW approach: farthest from agent1 & agent2 ============
+
             print("---------------")
             print("farthest landmark")
             print("---------------")
@@ -791,55 +745,3 @@ class AugmentedMPE(SimpleMPE_v2):
             }
 
             return rew
-
-            # Now that we have 'additional_rew' for agent_0, let's handle the final return:
-
-            # ================== If self.all_agents_intrinsic is True? ==================
-
-        #
-        # index = jnp.argmin(state.p_pos[self.num_agents:, 0])
-        # leftmost_landmark_pos = state.p_pos[self.num_agents:][index]
-
-        ### === INTRINSIC REWARD FOR ALL AGENTS (USING THE 0TH LANDMARK) === ###
-        # if self.all_agents_intrinsic is True:
-        #     # pick the "zeroth" landmark from the array
-        #     # (not necessarily the leftmost if landmarks are random, but that's your chosen logic)
-        #     zero_landmark_pos = state.p_pos[self.num_agents:][0]
-        #
-        #     # for each agent, negative distance to that zero-th landmark
-        #     @partial(jax.vmap, in_axes=(0,))
-        #     def _intrinsic(aidx: int) -> float:
-        #         dist = jnp.linalg.norm(state.p_pos[aidx] - zero_landmark_pos)
-        #         return -dist
-        #
-        #     intrinsic_vals = _intrinsic(self.agent_range)
-        #
-        #     ### === Construct the final dictionary === ###
-        #     # each agent gets (extrinsic, intrinsic)
-        #     # optionally scale or manipulate the intrinsic if you wish
-        #
-        #     rew = {
-        #         a: (
-        #             _agent_rew(i, c) * self.local_ratio + global_rew * (1 - self.local_ratio),
-        #             intrinsic_vals[i]   # Apply additional reward for agent 0
-        #         )
-        #         for i, a in enumerate(self.agents)
-        #     }
-        #
-        #     return rew
-        #
-        # else:
-        #
-        #     leftmost_landmark_pos = state.p_pos[self.num_agents:][0]
-        #
-        #     dist_to_leftmost_landmark = jnp.linalg.norm(state.p_pos[0] - leftmost_landmark_pos)
-        #     additional_rew = -dist_to_leftmost_landmark  # Reward based on distance to the leftmost landmark
-        #
-        #     rew = {
-        #         a: (
-        #             _agent_rew(i, c) * self.local_ratio + global_rew * (1 - self.local_ratio),
-        #             additional_rew  if i == 0 else 0.0  # Apply additional reward for agent 0
-        #         )
-        #         for i, a in enumerate(self.agents)
-        #     }
-        #     return rew

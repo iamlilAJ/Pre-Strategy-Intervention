@@ -49,75 +49,6 @@ class CustomTrainState(TrainState):
     test_returns: float = 0.0
 
 
-# Define a custom train state for the ESTM model
-class ESTMTrainState(TrainState):
-    batch_stats: Any = None
-
-
-def extract_hanabi_extrinsic_state(obs):
-    """
-    Extract extrinsic state from Hanabi observations.
-    Uses Board (76) and Discards (50) components of the observation.
-    """
-    # Get the first agent's observation
-    agent_list = ['agent_0', 'agent_1', 'agent_2']
-    first_obs = obs['agent_0']
-    obs_stacked =  jnp.stack([obs[agent] for agent in agent_list], axis=0)
-
-    external_state = obs_stacked[..., 4:14]
-
-    return external_state
-
-class ESTMNetwork(nn.Module):
-    hidden_dim: int = 128
-    output_dim: int = 10
-
-    @nn.compact
-    def __call__(self, x, train: bool = False):
-        x = nn.Dense(self.hidden_dim)(x)
-        x = nn.relu(x)
-        x = nn.Dense(self.output_dim)(x)
-        return x
-
-def create_estm_train_state(rng, input_size, output_size, hidden_dim=128, lr=3e-4):
-    """Create a train state for the ESTM network"""
-    estm = ESTMNetwork(hidden_dim=hidden_dim, output_dim=output_size)
-
-    # Initialize the model
-    dummy_input = jnp.zeros((1, input_size))
-    variables = estm.init(rng, dummy_input)
-
-    # Create optimizer
-    tx = optax.adam(learning_rate=lr)
-
-    # Create the train state
-    return ESTMTrainState.create(
-        apply_fn=estm.apply,
-        params=variables['params'],
-        tx=tx,
-    )
-
-
-
-# Function to update ESTM
-def update_estm(estm_apply_fn, estm_params, estm_optimizer, estm_opt_state,
-                states, actions, next_states):
-    batch_size = states.shape[0]
-    flattened_actions = actions.transpose(1, 0).reshape(batch_size, -1)
-    s_a = jnp.concatenate([states, flattened_actions], axis=-1)
-
-    def loss_fn(params):
-        predicted_next_states = estm_apply_fn(params, s_a)
-        loss = jnp.mean((predicted_next_states - next_states) ** 2)
-        return loss
-
-    loss, grads = jax.value_and_grad(loss_fn)(estm_params)
-    updates, new_opt_state = estm_optimizer.update(grads, estm_opt_state, estm_params)
-    new_params = optax.apply_updates(estm_params, updates)
-
-    return new_params, new_opt_state, loss
-
-
 
 def make_train(config, env):
 
@@ -169,92 +100,6 @@ def make_train(config, env):
 
     def unbatchify(x: jnp.ndarray):
         return {agent: x[i] for i, agent in enumerate(env.agents)}
-
-    def calculate_idi(estm_params, estm_apply_fn, states, actions, avail_actions, rng_key, beta1):
-        """Calculate Individual Diligence Intrinsic motivation
-
-        Args:
-            estm_params: Parameters of the ESTM model
-            estm_apply_fn: Apply function of the ESTM model
-            states: Environment states [batch, state_dim] - Shape: [1024, 126]
-            actions: Agent actions [num_agents, batch] - Shape: [2, 1024]
-            avail_actions: Available actions mask [num_agents, batch, num_actions] - Shape: [2, 1024, 21]
-            rng_key: Random key for sampling
-            beta1: Scaling factor for IDI rewards
-
-        Returns:
-            IDI rewards [batch, num_agents]
-        """
-        # Get shapes from inputs
-        num_agents = actions.shape[0]  # 2 agents
-        batch_size = states.shape[0]  # 1024 batch size
-        num_actions = avail_actions.shape[-1]  # 21 actions
-        state_dim = states.shape[-1]  # 126 state dimensions
-
-        # First convert actions to one-hot
-        actions_onehot = jax.nn.one_hot(actions, num_actions)  # [2, 1024, 21]
-
-        # Transpose actions to [batch, num_agents, num_actions]
-        actions_onehot_t = jnp.transpose(actions_onehot, (1, 0, 2))  # [1024, 2, 21]
-
-        # Flatten actions to [batch, num_agents*num_actions]
-        flat_actions = actions_onehot_t.reshape(batch_size, -1)  # [1024, 2*21]
-
-        # Combine states and actions
-        s_a = jnp.concatenate([states, flat_actions], axis=-1)  # [1024, 126+2*21]
-
-        # Predict next state using ESTM
-        predicted_next_state = estm_apply_fn({"params": estm_params}, s_a)  # [1024, state_dim]
-
-        # Function to calculate IDI for one agent
-        def calc_agent_idi(agent_idx, rng):
-            # Sample size for counterfactual actions
-            sample_size = 3
-            rngs = jax.random.split(rng, sample_size)
-
-            def generate_cf_sample(sample_rng):
-                # Get available actions for this agent
-                agent_avail = avail_actions[agent_idx]  # [1024, 21]
-
-                # Sample random actions according to availability
-                probs = agent_avail / (jnp.sum(agent_avail, axis=-1, keepdims=True) + 1e-10)
-                cf_action_idx = jax.random.categorical(sample_rng, jnp.log(probs + 1e-10), axis=-1)  # [1024]
-                cf_action_onehot = jax.nn.one_hot(cf_action_idx, num_actions)  # [1024, 21]
-
-                # Create counterfactual actions by replacing this agent's action
-                cf_actions = actions_onehot_t.copy()  # [1024, 2, 21]
-                cf_actions = cf_actions.at[:, agent_idx, :].set(cf_action_onehot)  # [1024, 2, 21]
-                cf_actions_flat = cf_actions.reshape(batch_size, -1)  # [1024, 2*21]
-
-                # Combine with state
-                cf_s_a = jnp.concatenate([states, cf_actions_flat], axis=-1)  # [1024, 126+2*21]
-
-                # Predict counterfactual next state
-                cf_next_state = estm_apply_fn({"params": estm_params}, cf_s_a)  # [1024, state_dim]
-
-                return cf_next_state
-
-            # Generate counterfactual samples
-            cf_predictions = jax.vmap(generate_cf_sample)(rngs)  # [sample_size, 1024, state_dim]
-
-            # Average the counterfactual predictions
-            mean_cf_prediction = jnp.mean(cf_predictions, axis=0)  # [1024, state_dim]
-
-            # Calculate MSE between actual prediction and counterfactual prediction
-            agent_idi = jnp.mean((predicted_next_state - mean_cf_prediction) ** 2, axis=-1)  # [1024]
-
-            return agent_idi
-
-        # Generate RNG keys for each agent
-        agent_rngs = jax.random.split(rng_key, num_agents)
-
-        # Calculate IDI for each agent
-        agent_idis = jax.vmap(calc_agent_idi)(jnp.arange(num_agents), agent_rngs)  # [2, 1024]
-
-        # Scale by beta1 and transpose to shape [batch, num_agents]
-        scaled_idis = (agent_idis * beta1)
-
-        return scaled_idis
 
     def train(rng):
 
@@ -324,16 +169,6 @@ def make_train(config, env):
 
         rng, _rng = jax.random.split(rng)
         train_state = create_agent(rng)
-
-        input_size = 126 + 21 * 2
-        output_size = 126
-        estm_state = create_estm_train_state(
-            _rng,
-            input_size,
-            output_size,
-            hidden_dim=config.get("LAIES_HIDDEN_DIM", 128),
-            lr=config.get("LAIES_LR", 3e-4)
-        )
 
         # INIT BUFFER
         # to initalize the buffer is necessary to sample a trajectory to know its strucutre

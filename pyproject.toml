@@ -32,7 +32,6 @@ classifiers = [
 ]
 dependencies = [
   "jax==0.4.25",
-  # jaxlib
   "flax==0.8.4",
   "safetensors",
   "chex==0.1.86",
@@ -42,6 +41,7 @@ dependencies = [
   "pillow",
   "scipy==1.12.0",
   "gymnax==0.0.9",
+  "numba==0.61.2",
 ]
 
 [project.optional-dependencies]

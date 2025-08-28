@@ -29,8 +29,8 @@ This project requires Python 3.10 and uses `conda` for environment management.
 4. **Install JAX with GPU support (Recommended):**
     We strongly recommend installing JAX according to your specific CUDA version by following the [official JAX installation guide](https://github.com/google/jax#installation). For example, for CUDA 12:
     ```shell
-pip install -U "jax[cuda12_pip]==0.4.25" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
-    ```
+    pip install -U "jax[cuda12_pip]==0.4.25" -f [https://storage.googleapis.com/jax-releases/jax_cuda_releases.html]
+   ```
 
 
 

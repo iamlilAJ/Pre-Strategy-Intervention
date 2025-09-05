@@ -87,6 +87,7 @@ python baselines/QLearning/qmix_pre.py +alg=qmix
 | :------------- | :---------------------------------------------------: | :---------------------------------------------------: |
 | **Our Method** | ![MPE Visualization 1](assets/MPE_visualization_1.gif) | ![MPE Visualization 2](assets/MPE_visualization_2.gif) |
 | **Baseline** | ![Baseline 1](assets/MPE_visualization_baseline_1.gif) | ![Baseline 2](assets/MPE_visualization_baseline_2.gif) |
+
 In this visualization, the green agent (our intervened agent) has learned a preference for moving towards the yellow landmark. By learning this simple additional desired outcome, the agent team can achieve effective coordination and successfully solve the task.
 
 ## License and Acknowledgements

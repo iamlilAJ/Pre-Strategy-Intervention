@@ -80,6 +80,12 @@ QMIX
 python baselines/QLearning/qmix_pre.py +alg=qmix
 ```
 
+## Visualization of Learned Behavior
+
+| Visualization 1 | Visualization 2 | Description                                                                                                                                                                                                                                     |
+|---|---|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ![MPE Visualization 1](assets/MPE_visualization_1.gif) | ![MPE Visualization 2](assets/MPE_visualization_2.gif) | In this visualization, the green agent has learned a preference for moving towards the yellow landmark. By learning this simple additional deisired outcome, the agent team can achieve effective coordination and successfully solve the task. |
+
 ## License and Acknowledgements
 This project is licensed under the Apache 2.0 License. See the LICENSE file for details.
 

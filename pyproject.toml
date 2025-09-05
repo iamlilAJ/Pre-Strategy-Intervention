@@ -10,9 +10,9 @@ include = ['jaxmarl*']
 version = {attr = "jaxmarl.__version__"}
 
 [project]
-name = "jaxmarl-pre-strategy-intervention"
+name = "jaxmarl"
 readme = "README.md"
-description = "Pre-strategy Intervention in Multi-Agent Reinforcement Learning with JAX" # <---【建议修改】
+description = "Pre-strategy Intervention in Multi-Agent Reinforcement Learning with JAX"
 authors = [
     {name = "Anjie Liu", email = "anjie.liu@connect.hkust-gz.edu.cn"},
   ]

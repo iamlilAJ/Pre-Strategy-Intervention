@@ -29,9 +29,9 @@
 # ENV
 "ENV_NAME": "AugmentedMPE"
 "ENV_KWARGS": {
-  "train_pre_policy": True,
-  "if_augment_obs": True,
-  "intrinsic_reward_ratio": 0.6,
+  "train_pre_policy": False,
+  "if_augment_obs": False,
+  "intrinsic_reward_ratio": 0.0,
   "zero_index": True
 }
 

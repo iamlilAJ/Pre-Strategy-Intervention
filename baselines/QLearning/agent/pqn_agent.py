@@ -8,7 +8,7 @@ from typing import NamedTuple, Dict, Union, Any, Tuple, Optional, List
 from functools import partial
 from agent.pre_policy_module.pre_policy_network import PrePolicyMLP
 from agent.gnn_module.hanabi_gnn import End2EndGCN
-from agent.gnn_module.hanabi_4_player_gnn import End2EndGCN4Players
+
 
 
 
@@ -77,10 +77,6 @@ class PQNAgent(nn.Module):
             self.gnn = nn.vmap(End2EndGCN, in_axes=0, out_axes=0,
                            variable_axes={"params": 0},
                            split_rngs={"params": 0})(config=self.config)
-        elif self.num_agents == 4:
-            self.gnn = nn.vmap(End2EndGCN4Players, in_axes=0, out_axes=0,
-                               variable_axes={"params": 0},
-                               split_rngs={"params": 0})(config=self.config)
         else:
             raise NotImplementedError("This implementation only supports 2 or 4 agents.")
 
@@ -118,10 +114,6 @@ class PQNAgent(nn.Module):
             q_vals: jnp.ndarray with shape (num_agents, action_dim)
         """
 
-        # print(f"input shape: {x.shape}")
-        # print("sum for agent 0", jnp.sum(x[0, :, -1]))
-        #
-        # print("sum for agent 1", jnp.sum(x[1, :, -1]))
         original_obs = x[:, :, :-1] # remove last
 
         agent_embedding = self.agent_mlp(original_obs, train)  # (num_agents, hidden_dim)
@@ -183,12 +175,6 @@ class BaselinePQNAgent(nn.Module):
 
 
     def __call__(self, x, train=False):
-
-        # if self.if_augment_obs:
-        #     input = x  # remove last augmented feature.
-        # else:
-        #
-        #     input = x[:, :, :-1]
 
         agent_embedding = self.agent_mlp(x, train)
 

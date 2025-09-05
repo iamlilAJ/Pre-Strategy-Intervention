@@ -19,10 +19,8 @@ import flashbax as fbx
 import wandb
 
 from jaxmarl import make
-from jaxmarl.environments.smax import map_name_to_scenario
-from jaxmarl.environments.overcooked import overcooked_layouts
+
 from jaxmarl.wrappers.baselines import (
-    SMAXLogWrapper,
     MPELogWrapper,
     LogWrapper,
     CTRolloutManager,
@@ -637,30 +635,20 @@ def make_train(config, env):
     return train
 
 
+
+
 def env_from_config(config):
     env_name = config["ENV_NAME"]
     # smax init neeeds a scenario
-    if "smax" in env_name.lower():
-        config["ENV_KWARGS"]["scenario"] = map_name_to_scenario(config["MAP_NAME"])
-        env_name = f"{config['ENV_NAME']}_{config['MAP_NAME']}"
-        env = make(config["ENV_NAME"], **config["ENV_KWARGS"])
-        env = SMAXLogWrapper(env)
-    # overcooked needs a layout
-    elif "overcooked" in env_name.lower():
-        env_name = f"{config['ENV_NAME']}_{config['ENV_KWARGS']['layout']}"
-        config["ENV_KWARGS"]["layout"] = overcooked_layouts[
-            config["ENV_KWARGS"]["layout"]
-        ]
-        env = make(config["ENV_NAME"], **config["ENV_KWARGS"])
-        env = LogWrapper(env)
-    elif "mpe" in env_name.lower():
+    if "mpe" in env_name.lower():
         env = make(config["ENV_NAME"], **config["ENV_KWARGS"])
         env = PrePolicyWrapper(env)
+
+
     else:
         env = make(config["ENV_NAME"], **config["ENV_KWARGS"])
         env = LogWrapper(env)
     return env, env_name
-
 
 def single_run(config):
 

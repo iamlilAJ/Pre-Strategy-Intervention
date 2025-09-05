@@ -29,7 +29,7 @@
 "TEST_NUM_STEPS": 100
 "TEST_NUM_ENVS": 3000 # number of episodes to average over, can affect performance
 
-#"ALG_NAME": "pqn_vdn_ff" # if you want to change the name of the algo in the metrics
+
 "NUM_PROXY_AGENTS": 1
 "OBS_ENC_HIDDEN_DIM": 64
 "TEMPERATURE": 1.0
@@ -49,5 +49,5 @@
 
 
 "RUN_BASELINE": False
-
+"ALG_NAME": "PQN"
 "CONFIG_NAME": PQN

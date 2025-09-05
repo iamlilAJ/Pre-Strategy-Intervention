@@ -1,10 +1,3 @@
-import sys
-
-from PIL.features import features
-
-print("Python search paths:")
-for path in sys.path:
-    print(path)
 
 import flax.linen as nn
 import jax
@@ -162,77 +155,6 @@ class IQLAgent(nn.Module):
 
 
 
-class LearnRewIQLAgent(nn.Module):
-    action_dim: int
-    hidden_dim: int
-    num_agents: int
-    num_proxy_agents: int
-    init_scale: float
-    pre_policy_output_dim: int
-    pre_policy_hidden_dim: int
-    node_feature_dim: int
-
-    def setup(self):
-
-        self.gnn = nn.vmap(End2EndGCN, in_axes=0, out_axes=0,
-                           variable_axes={"params": 0},
-                           split_rngs={"params": 0})(node_feature_dim=self.node_feature_dim)
-
-
-        self.agent_rnn=nn.vmap(AgentRNN, in_axes=0, out_axes=0, variable_axes={"params": 0}, split_rngs={"params": 0})(
-             self.hidden_dim, self.init_scale
-        )
-
-        # Initialize PrePolicyNetwork
-        self.pre_policy_network = nn.vmap(PrePolicyRNN, in_axes=0, out_axes=0,
-                                          variable_axes={"params": 0},
-                                          split_rngs={"params": True})(
-            self.pre_policy_output_dim, self.pre_policy_hidden_dim
-        )
-
-        self.mlp_gnn = nn.vmap(nn.Dense, in_axes=0, out_axes=0, variable_axes={"params": 0}, split_rngs={"params": 0})(
-            features=14, kernel_init=orthogonal(self.init_scale)
-        )
-
-        self.q_value_mlp = nn.vmap(nn.Dense, in_axes=0, out_axes=0, variable_axes={"params": 0}, split_rngs={"params": 0})(
-            self.action_dim, kernel_init=orthogonal(self.init_scale)
-        )
-
-        # self.rew_network = nn.Sequential([nn.Dense(features=1),
-        #                                   nn.tanh,
-        #                                   ])
-        self.rew_rnn = RewardRNN(hidden_dim=self.hidden_dim, init_scale=self.init_scale)
-
-    def __call__(self, agent_hidden, obs, dones, pre_policy_hidden, rew_hidden):
-        '''
-        All input observation processed by AgentRNN, then output embedding,
-        embedding input into GNN and output graph embedding,
-        Q values input: [AgentRNN output embedding, gnn graph embedding, pre_policy embedding]
-        '''
-        agent_hidden, agent_embedding = self.agent_rnn(agent_hidden, obs, dones)
-
-        pre_policy_hidden, pre_policy_embedding = self.pre_policy_network(pre_policy_hidden, obs, dones)
-
-        # Create a mask for pre_policy_embedding
-        mask = jnp.arange(self.num_agents) < self.num_proxy_agents
-        mask = mask[:, None, None, None]  # Reshape for broadcasting
-        # Non-proxy agent receive all zero pre-policy embedding
-        pre_policy_embedding = pre_policy_embedding * mask
-
-        gnn_input = self.mlp_gnn(agent_embedding)
-
-        gnn_features = self.gnn(gnn_input)
-
-        q_value_input = jnp.concatenate([agent_embedding, gnn_features, pre_policy_embedding], axis=-1)
-        q_vals = self.q_value_mlp(q_value_input)
-
-        # additional reward
-        rew_hidden, learn_rew = self.rew_rnn(rew_hidden, agent_embedding[0, :, :, :], dones[0, :, :])
-
-        learn_rew = learn_rew.squeeze() - 10.
-        # print("learn rew shape ", learn_rew.shape)
-
-        return agent_hidden, q_vals, pre_policy_hidden, learn_rew, rew_hidden
 
 
 class BaselineIQLAgent(nn.Module):

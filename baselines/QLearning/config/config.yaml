@@ -3,7 +3,7 @@
 "HYP_TUNE": False # perform hyp tune
 
 # wandb params
-"WANDB_MODE": "online"
+"WANDB_MODE": "disabled"
 
 "ENTITY": "pre-policy-marl"
 "PROJECT": "marl"

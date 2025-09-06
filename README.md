@@ -55,7 +55,7 @@ PQN-VDN
 python baselines/QLearning/pqn_vdn_pre.py +alg=pqn
 ```
 
-PQN-IQ
+PQN-IQL
 ```shell
 python baselines/QLearning/pqn_iql_pre.py +alg=pqn
 ```

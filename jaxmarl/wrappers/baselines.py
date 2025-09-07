@@ -155,13 +155,6 @@ class PrePolicyWrapper(JaxMARLWrapper):
         extrinsic_rewards = {}
         training_rewards = {}
 
-        # for agent, (extrinsic_rew, intrinsic_rew) in reward.items():
-        #     if agent == 'agent_0' and self._env.train_pre_policy:
-        #         mixed_rewards[agent] = extrinsic_rew + intrinsic_rew * self._env.intrinsic_reward_ratio
-        #         extrinsic_rewards[agent] = extrinsic_rew
-        #     else:
-        #         mixed_rewards[agent] = extrinsic_rew
-        #         extrinsic_rewards[agent] = extrinsic_rew
 
         for agent, (extrinsic_rew, intrinsic_rew) in reward.items():
             mixed_rewards[agent] = extrinsic_rew + intrinsic_rew
@@ -172,11 +165,8 @@ class PrePolicyWrapper(JaxMARLWrapper):
                 training_rewards[agent] = (extrinsic_rew +
                                            intrinsic_rew * self._env.intrinsic_reward_ratio)
 
-
             elif agent == 'agent_0' and self._env.train_pre_policy:
                 print("train intrinsic")
-                # training_rewards[agent] = (extrinsic_rew * (1 - self._env.intrinsic_reward_ratio)+
-                #                            intrinsic_rew * self._env.intrinsic_reward_ratio)
                 training_rewards[agent] = (extrinsic_rew  +
                                            intrinsic_rew * self._env.intrinsic_reward_ratio)
             else:
@@ -211,8 +201,6 @@ class PrePolicyWrapper(JaxMARLWrapper):
         if self.replace_info:
             info = {}
 
-        # Log the original rewards
-        # info["original_rewards"] = original_reward_log
         info["returned_episode_mixed_returns"] = state.returned_episode_mixed_returns
         info["returned_episode_extrinsic_returns"] = state.returned_episode_extrinsic_returns
         info["returned_episode_intrinsic_returns"] = state.returned_episode_mixed_returns - state.returned_episode_extrinsic_returns
@@ -266,17 +254,13 @@ class PrePolicyHanabiWrapper(JaxMARLWrapper):
         for agent, (extrinsic_rew, intrinsic_rew) in reward.items():
             mixed_rewards[agent] = extrinsic_rew + intrinsic_rew
             extrinsic_rewards[agent] = extrinsic_rew
-            #
-            # if self._env.all_agents_intrinsic:
-            #     print("train_all_agents_intrinsic")
-            #     training_rewards[agent] = (extrinsic_rew +
-            #                                intrinsic_rew * self._env.intrinsic_reward_ratio)
+
             if self._env.intervene_two_agents:
                 training_rewards[agent] = (extrinsic_rew +
                                            intrinsic_rew * self._env.intrinsic_reward_ratio)
 
             elif agent == 'agent_0' and self._env.train_pre_policy:
-                print("train_pre_policy")
+
                 training_rewards[agent] = (extrinsic_rew +
                                            intrinsic_rew * self._env.intrinsic_reward_ratio)
 
@@ -360,43 +344,6 @@ class MPELogWrapper(LogWrapper):
         info["returned_episode"] = jnp.full((self._env.num_agents,), ep_done)
         return obs, state, reward, done, info
 
-
-class MPELogWrapper_v2(LogWrapper):
-    """ Times reward signal by number of agents within the environment,
-    to match the on-policy codebase. """
-
-    @partial(jax.jit, static_argnums=(0,))
-    def step(
-            self,
-            key: chex.PRNGKey,
-            state: LogEnvState,
-            action: Union[int, float],
-    ) -> Tuple[chex.Array, LogEnvState, float, bool, dict]:
-        obs, env_state, reward, done, info = self._env.step(
-            key, state.env_state, action
-        )
-        for agent, (extrinsic_rew, intrinsic_rew) in reward.items():
-            reward[agent] = extrinsic_rew
-
-        rewardlog = jax.tree_map(lambda x: x * self._env.num_agents, reward)  # As per on-policy codebase
-        ep_done = done["__all__"]
-        new_episode_return = state.episode_returns + self._batchify_floats(rewardlog)
-        new_episode_length = state.episode_lengths + 1
-        state = LogEnvState(
-            env_state=env_state,
-            episode_returns=new_episode_return * (1 - ep_done),
-            episode_lengths=new_episode_length * (1 - ep_done),
-            returned_episode_returns=state.returned_episode_returns * (1 - ep_done)
-                                     + new_episode_return * ep_done,
-            returned_episode_lengths=state.returned_episode_lengths * (1 - ep_done)
-                                     + new_episode_length * ep_done,
-        )
-        if self.replace_info:
-            info = {}
-        info["returned_episode_returns"] = state.returned_episode_returns
-        info["returned_episode_lengths"] = state.returned_episode_lengths
-        info["returned_episode"] = jnp.full((self._env.num_agents,), ep_done)
-        return obs, state, reward, done, info
 
 
 @struct.dataclass

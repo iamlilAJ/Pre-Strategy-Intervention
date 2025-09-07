@@ -24,9 +24,9 @@ from jaxmarl.wrappers.baselines import (
     MPELogWrapper,
     LogWrapper,
     CTRolloutManager,
+    PrePolicyWrapper
 )
 
-from jaxmarl.wrappers.baselines import PrePolicyWrapper
 from agent.iql_agent import IQLAgent, BaselineIQLAgent, ScannedRNN
 
 

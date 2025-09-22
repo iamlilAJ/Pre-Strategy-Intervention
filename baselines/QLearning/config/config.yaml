@@ -5,8 +5,8 @@
 # wandb params
 "WANDB_MODE": "disabled"
 
-"ENTITY": "pre-policy-marl"
-"PROJECT": "marl"
+"ENTITY": "your-entity"
+"PROJECT": "your-project"
 "WANDB_LOG_ALL_SEEDS": False # will log separately the vmapped seeds
 
 # where to save the params (if None, will not save)

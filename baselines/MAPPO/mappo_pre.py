@@ -489,7 +489,7 @@ def tune(default_config):
         }
     }
 
-    wandb.login()
+    
 
     sweep_id = default_config.get("SWEEP_ID", None)
 

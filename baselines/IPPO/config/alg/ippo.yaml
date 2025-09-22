@@ -28,8 +28,8 @@
 "HYP_TUNE": True
 "WANDB_MODE": "online"
 
-"ENTITY": "pre-policy-marl"
-"PROJECT": "marl"
+"ENTITY": "your-entity"
+"PROJECT": "your-project"
 
 "NUM_PROXY_AGENTS": 1
 "OBS_ENC_HIDDEN_DIM": 128

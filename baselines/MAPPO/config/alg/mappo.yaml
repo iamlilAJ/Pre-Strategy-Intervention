@@ -21,8 +21,8 @@
 
 # WandB Params
 "WANDB_MODE": "online"
-"ENTITY": "pre-policy-marl"
-"PROJECT": "marl"
+"ENTITY": "your-entity"
+"PROJECT": "your-project"
 
 
 "ENV_KWARGS": {

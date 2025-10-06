@@ -5,9 +5,7 @@ import copy
 import jax
 import jax.numpy as jnp
 import numpy as np
-from functools import partial
 from typing import NamedTuple, Dict, Union, Any
-
 import chex
 import optax
 import flax.linen as nn

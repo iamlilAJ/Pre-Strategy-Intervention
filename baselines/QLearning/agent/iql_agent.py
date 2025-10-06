@@ -1,10 +1,8 @@
-
 import flax.linen as nn
 import jax
 import jax.numpy as jnp
 import numpy as np
 from flax.linen.initializers import constant, orthogonal
-from typing import NamedTuple, Dict, Union, Any, Tuple, Optional, List
 from functools import partial
 from agent.pre_policy_module.pre_policy_network import PrePolicyRNN
 from agent.gnn_module.mpe_gnn import End2EndGCN
@@ -152,11 +150,7 @@ class BaselineIQLAgent(nn.Module):
         )
 
     def __call__(self, agent_hidden, obs, dones, _):
-        '''
-        All input observation processed by AgentRNN, then output embedding,
-        embedding input into GNN and output graph embedding,
-        Q values input: [AgentRNN output embedding, gnn graph embedding, pre_policy embedding]
-        '''
+
         agent_hidden, agent_embedding = self.agent_rnn(agent_hidden, obs, dones)
 
         q_vals = self.q_value_mlp(agent_embedding)

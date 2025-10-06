@@ -3,8 +3,6 @@ Based on PureJaxRL Implementation of PPO
 """
 
 import os
-
-
 os.environ['XLA_PYTHON_CLIENT_PREALLOCATE'] = 'false'
 import jax
 import jax.numpy as jnp

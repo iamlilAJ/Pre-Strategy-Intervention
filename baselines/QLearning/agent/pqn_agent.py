@@ -1,11 +1,6 @@
-
 import flax.linen as nn
-
 import jax.numpy as jnp
-import numpy as np
-from flax.linen.initializers import constant, orthogonal
 from typing import NamedTuple, Dict, Union, Any, Tuple, Optional, List
-from functools import partial
 from agent.pre_policy_module.pre_policy_network import PrePolicyMLP
 from agent.gnn_module.hanabi_gnn import End2EndGCN
 
@@ -106,13 +101,6 @@ class PQNAgent(nn.Module):
 
 
     def __call__(self, x, train=False):
-        """
-        Args:
-            x: jnp.ndarray with shape (num_agents, 658)
-            rng: jax.random.PRNGKey
-        Returns:
-            q_vals: jnp.ndarray with shape (num_agents, action_dim)
-        """
 
         original_obs = x[:, :, :-1] # remove last
 

@@ -109,7 +109,7 @@ class PrePolicyMAPPO(nn.Module):
         pre_policy_embedding = self.pre_policy_network(obs)
         mask = jnp.arange(self.num_agents) < self.config["NUM_PROXY_AGENTS"]
         mask = mask.astype(jnp.float32)[:, None ,None, None]  # (num_agents, 1)
-        # Non-proxy agents receive all zero pre-policy embedding
+
         pre_policy_embedding = pre_policy_embedding * mask  # (num_agents, pre_policy_output_dim)
 
         gnn_features = self.gnn(obs)

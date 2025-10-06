@@ -2,10 +2,8 @@ import jax
 import jax.numpy as jnp
 import flax.linen as nn
 import numpy as np
-import optax
 from flax.linen.initializers import constant, orthogonal
 from typing import Sequence, NamedTuple, Any, Dict
-from flax.training.train_state import TrainState
 import distrax
 
 from agent.pre_policy_module.pre_policy_network import PrePolicyMLP
@@ -138,9 +136,7 @@ class PrePolicyIPPO(nn.Module):
                               variable_axes={"params": 0},
                               split_rngs={"params": 0})(config=self.config)
 
-        # self.critic = nn.vmap(Critic, in_axes=0, out_axes=0,
-        #                       variable_axes={"params": None},
-        #                       split_rngs={"params": False})(config=self.config)
+
 
     def __call__(self, x):
         obs, dones, avail_actions = x

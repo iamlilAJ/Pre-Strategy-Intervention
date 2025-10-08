@@ -30,8 +30,9 @@ classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
     "License :: OSI Approved :: Apache Software License",
 ]
+
 dependencies = [
-  "jax[cuda12]==0.4.25",
+  "jax==0.4.25",
   "flax==0.8.4",
   "safetensors",
   "chex==0.1.86",

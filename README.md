@@ -3,13 +3,15 @@
 This repository contains the official JAX implementation for the NeurIPS 2025 paper: *A Principle of Pre-Strategy Intervention in Multi-Agent Reinforcement Learning*.
 
 
+
 ## Installation
 
-This project requires Python 3.10 and uses `conda` for environment management.
+
+This project requires Python 3.10 and we recommend `conda` for environment management. The installation is a **two-stage process**: first, you install the hardware-specific JAX library, and second, you install this project's dependencies.
 
 1.  **Clone the repository:**
     ```shell
-    git clone https://github.com/iamlilAJ/Pre-Strategy-Intervention.git
+    git clone [https://github.com/iamlilAJ/Pre-Strategy-Intervention.git](https://github.com/iamlilAJ/Pre-Strategy-Intervention.git)
     cd Pre-Strategy-Intervention
     ```
 
@@ -19,22 +21,25 @@ This project requires Python 3.10 and uses `conda` for environment management.
     conda activate intervention
     ```
 
-3.  **Install the project and dependencies:**
-    This command will install the project in "editable" mode, which means that any changes you make to the local source code will be immediately reflected in your Python environment. This is the standard and recommended way to work with this project.
+3.  **Install JAX for your specific hardware:**
+
+    * **For NVIDIA GPU Users (Recommended):**
+        This command installs the exact versions of JAX, a CUDA-enabled jaxlib, and cuDNN that are compatible with this project.
+        ```shell
+        pip install jax==0.4.25 jaxlib==0.4.25 nvidia-cudnn-cu12==8.9.2.26 -f [https://storage.googleapis.com/jax-releases/jax_cuda_releases.html](https://storage.googleapis.com/jax-releases/jax_cuda_releases.html)
+        ```
+
+    * **For CPU-Only Users:**
+        If you do not have an NVIDIA GPU, install the CPU-only version of JAX.
+        ```shell
+        pip install jax==0.4.25 jaxlib==0.4.25
+        ```
+
+4.  **Install the project and dependencies:**
+    Now that JAX is correctly installed, you can install the rest of the project's dependencies. This command uses the `[algs]` extra to include packages like `optax` and `wandb`.
     ```shell
     pip install -e .[algs]
     ```
-
-[//]: # ()
-[//]: # (4.  **Install JAX with GPU support &#40;Recommended&#41;:**)
-
-[//]: # (    We strongly recommend installing JAX according to your specific CUDA version by following the [official JAX installation guide]&#40;https://github.com/google/jax#installation&#41;. For example, for CUDA 12:)
-
-[//]: # (    ```shell)
-
-[//]: # (    pip install -U "jax[cuda12_pip]==0.4.25" -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html)
-
-[//]: # (    ```)
 
 
 
@@ -77,7 +82,7 @@ python baselines/QLearning/iql_pre.py +alg=iql_scenario_2
 ```
 VDN
 ```shell
-python baselines/QLearning/vdn_pre.py + alg=vdn
+python baselines/QLearning/vdn_pre.py +alg=vdn
 ```
 QMIX
 ```shell

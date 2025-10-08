@@ -1,6 +1,6 @@
-# A Principle of Pre-Strategy Intervention for Multi-Agent Reinforcement Learning
+# A Principle of Targeted Intervention for Multi-Agent Reinforcement Learning
 
-This repository contains the official JAX implementation for the NeurIPS 2025 paper: *A Principle of Pre-Strategy Intervention in Multi-Agent Reinforcement Learning*.
+This repository contains the official JAX implementation for the NeurIPS 2025 paper: *A Principle of Targeted Intervention in Multi-Agent Reinforcement Learning*.
 
 
 
@@ -100,6 +100,18 @@ python baselines/QLearning/qmix_pre.py +alg=qmix
 
 In this visualization, the red agent (our intervened agent) has learned a preference for moving towards the yellow landmark. By learning this simple additional desired outcome, the agent team can achieve effective coordination and successfully solve the task.
 
+## Citation
+
+If you use this code in your research, please consider citing our paper:
+
+```latex
+@inproceedings{liu2025targeted,
+  title={A Principle of Targeted Intervention for Multi-Agent Reinforcement Learning},
+  author={Liu, Anjie and Wang, Jianhong and Kaski, Samuel and Wang, Jun and Yang, Mengyue},
+  booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
+  year={2025}
+}
+```
 ## License and Acknowledgements
 This project is licensed under the Apache 2.0 License. See the LICENSE file for details.
 

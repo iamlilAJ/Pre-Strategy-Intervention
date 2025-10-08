@@ -26,7 +26,7 @@ This project requires Python 3.10 and we recommend `conda` for environment manag
     * **For NVIDIA GPU Users (Recommended):**
         This command installs the exact versions of JAX, a CUDA-enabled jaxlib, and cuDNN that are compatible with this project.
         ```shell
-        pip install jax==0.4.25 jaxlib==0.4.25 nvidia-cudnn-cu12==8.9.2.26 -f [https://storage.googleapis.com/jax-releases/jax_cuda_releases.html](https://storage.googleapis.com/jax-releases/jax_cuda_releases.html)
+        pip install jax==0.4.25 jaxlib==0.4.25 nvidia-cudnn-cu12==8.9.2.26 -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
         ```
 
     * **For CPU-Only Users:**
@@ -52,7 +52,7 @@ python baselines/IPPO/ippo_pre.py +alg=ippo
 
 To change the scenarios
 ```shell
-python baselines/IPPO/ippo_pre.py +alg=ippo baselines.ENV_KWARGS.convention_type=the_chop
+python baselines/IPPO/ippo_pre.py +alg=ippo alg.ENV_KWARGS.convention_type=the_chop
 ```
 
 To run the MAPPO

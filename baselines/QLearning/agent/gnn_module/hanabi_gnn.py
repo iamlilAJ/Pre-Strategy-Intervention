@@ -249,47 +249,6 @@ class End2EndGCN(nn.Module):
 
         # Reshape to (batch_size, c_out)
 
-
         return graph_embedding
 
 
-
-def test_end_to_end_gcn():
-    """
-    Test the End2EndGCN module with synthetic Hanabi observations.
-    """
-    # Define test parameters
-    time_step = 4
-    batch_size = 2
-    obs_size = 658
-    c_out = 64
-    temperature = 0.5
-
-    # Instantiate the model
-    model = End2EndGCN(c_out=c_out, temperature=temperature)
-
-    # Create synthetic observations
-    rng = jax.random.PRNGKey(42)
-    synthetic_observations = jax.random.normal(rng, (time_step, batch_size, obs_size))
-
-    # Initialize the model parameters
-    variables = model.init(rng, synthetic_observations, rng)
-    params = variables['params']
-
-    # Create a new RNG for the forward pass to avoid reuse
-    rng, apply_rng = jax.random.split(rng)
-
-    # Apply the model
-    graph_embedding = model.apply({'params': params, 'rngs': {'gumbel': apply_rng}},
-                                  synthetic_observations, apply_rng)
-
-    # Expected output shape: (time_step, batch_size, c_out)
-    expected_shape = (time_step, batch_size, c_out)
-    assert graph_embedding.shape == expected_shape, f"Expected output shape {expected_shape}, got {graph_embedding.shape}"
-    print("End2EndGCN Test Passed!")
-    print("Output shape:", graph_embedding.shape)
-    print("Sample Output:", graph_embedding)
-
-# Run the test
-if __name__ == '__main__':
-    test_end_to_end_gcn()

@@ -46,4 +46,4 @@
 #Baseline
 "RUN_BASELINE": True
 
-"ALG_NAME": "base_marl_VDN"
+"ALG_NAME": "base_marl_QMIX"

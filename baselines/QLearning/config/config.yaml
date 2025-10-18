@@ -3,10 +3,11 @@
 "HYP_TUNE": False # perform hyp tune
 
 # wandb params
-"WANDB_MODE": "disabled"
+"WANDB_MODE": "online"
 
 "ENTITY": "your-entity"
 "PROJECT": "your-project"
+
 "WANDB_LOG_ALL_SEEDS": False # will log separately the vmapped seeds
 
 # where to save the params (if None, will not save)

@@ -21,8 +21,10 @@
 
 # WandB Params
 "WANDB_MODE": "online"
+
 "ENTITY": "your-entity"
 "PROJECT": "your-project"
+
 
 
 "ENV_KWARGS": {

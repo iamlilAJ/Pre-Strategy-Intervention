@@ -130,3 +130,25 @@ class PrePolicyMAPPO(nn.Module):
 
         return pi, output_critic
 
+
+class BaselineMAPPO(nn.Module):
+    action_dim: Sequence[int]
+    config: Dict
+
+    def setup(self):
+        self.actor = nn.vmap(ActorFF, in_axes=0, out_axes=0, variable_axes={"params": 0}, split_rngs={"params": 0})(
+            self.action_dim, self.config
+        )
+
+        self.critic = nn.vmap(CriticFF, in_axes=0, out_axes=0, variable_axes={"params": 0}, split_rngs={"params": 0})(
+            self.config
+        )
+
+
+    def __call__(self, x, global_obs):
+        pi = self.actor(x)
+        critic = self.critic(global_obs)
+
+        return pi, critic
+
+

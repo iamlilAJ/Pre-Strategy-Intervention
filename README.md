@@ -40,55 +40,68 @@ This project requires Python 3.10 and we recommend `conda` for environment manag
     ```shell
     pip install -e .[algs]
     ```
+## Running Experiments
 
+To reproduce the main results from our paper, run our **Targeted Intervention** method against the **Standard MARL** and **Intrinsic Reward** baselines described below. All experiments are managed via command-line arguments using Hydra.
 
+Our experiments are organized around three main conditions which can be applied to most algorithms. You can select the condition by modifying the Hydra configuration name (`+alg=...`).
 
-### Hanabi
+* **Targeted Intervention (Our Method):** Use the base algorithm name.
+    * Example: `+alg=ippo`
+* **Standard MARL Baseline:** Add the `base_marl_` prefix to the algorithm name.
+    * Example: `+alg=base_marl_ippo`
+* **Intrinsic Reward Baseline:** Add the `intrinsic_reward_` prefix to the algorithm name.
+    * Example: `+alg=intrinsic_reward_ippo`
 
-To run the IPPO
-```shell
-python baselines/IPPO/ippo_pre.py +alg=ippo
-```
+Below are the base commands for each supported algorithm and environment. Simply apply the prefixes described above to run the desired baseline.
 
-To change the scenarios
-```shell
-python baselines/IPPO/ippo_pre.py +alg=ippo alg.ENV_KWARGS.convention_type=the_chop
-```
+### Hanabi Environment
 
-To run the MAPPO
-```shell
-python baselines/MAPPO/mappo_pre.py +alg=mappo
-```
+* **IPPO:**
+    ```shell
+    python baselines/IPPO/ippo_pre.py +alg=ippo
+    ```
+    *To change the scenario, append the environment argument, e.g.:*
+    ```shell
+    python baselines/IPPO/ippo_pre.py +alg=ippo alg.ENV_KWARGS.convention_type=the_chop
+    ```
 
-PQN-VDN
-```shell
-python baselines/QLearning/pqn_vdn_pre.py +alg=pqn
-```
+* **MAPPO:**
+    ```shell
+    python baselines/MAPPO/mappo_pre.py +alg=mappo
+    ```
 
-PQN-IQL
-```shell
-python baselines/QLearning/pqn_iql_pre.py +alg=pqn
-```
+* **PQN-VDN:**
+    ```shell
+    python baselines/QLearning/pqn_vdn_pre.py +alg=pqn
+    ```
 
-### MPE
+* **PQN-IQL:**
+    ```shell
+    python baselines/QLearning/pqn_iql_pre.py +alg=pqn
+    ```
 
-IQL
-```shell
-python baselines/QLearning/iql_pre.py +alg=iql
-```
-To run the second scenario
-```shell
-python baselines/QLearning/iql_pre.py +alg=iql_scenario_2
-```
-VDN
-```shell
-python baselines/QLearning/vdn_pre.py +alg=vdn
-```
-QMIX
-```shell
-python baselines/QLearning/qmix_pre.py +alg=qmix
-```
+### MPE Environment
 
+* **IQL:**
+    ```shell
+    python baselines/QLearning/iql_pre.py +alg=iql
+    ```
+    *To run the second IQL scenario:*
+    ```shell
+    python baselines/QLearning/iql_pre.py +alg=iql_scenario_2
+    ```
+
+* **VDN:**
+    ```shell
+    python baselines/QLearning/vdn_pre.py +alg=vdn
+    ```
+
+* **QMIX:**
+    ```shell
+    python baselines/QLearning/qmix_pre.py +alg=qmix
+    ```
+  
 ## Visualization of Learned Behavior
 
 

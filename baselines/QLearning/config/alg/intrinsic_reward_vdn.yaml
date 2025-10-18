@@ -10,7 +10,7 @@
 "MIXER_HYPERNET_HIDDEN_DIM": 128 # just for qmix
 "MIXER_INIT_SCALE": 0.001 # just for qmix
 
-"SEED": 0
+"SEED": 30
 
 "EPS_START": 1.0
 "EPS_FINISH": 0.05

@@ -10,7 +10,7 @@
 "MIXER_HYPERNET_HIDDEN_DIM": 128 # just for qmix
 "MIXER_INIT_SCALE": 0.001 # just for qmix
 
-"SEED": 30
+"SEED": 0
 
 "EPS_START": 1.0
 "EPS_FINISH": 0.05
@@ -29,10 +29,10 @@
 # ENV
 "ENV_NAME": "AugmentedMPE"
 "ENV_KWARGS": {
-  "train_pre_policy": False,
+  "train_pre_policy": True,
   "if_augment_obs": False,
-  "intrinsic_reward_ratio": 0.0,
-  "zero_index": False,
+  "intrinsic_reward_ratio": 0.5,
+  "zero_index": True,
 }
 
 # evaluate

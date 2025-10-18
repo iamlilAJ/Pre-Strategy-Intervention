@@ -23,7 +23,7 @@ import hydra
 from omegaconf import OmegaConf
 from functools import partial
 
-from agent.mappo_agent import PrePolicyMAPPO
+from agent.mappo_agent import PrePolicyMAPPO, BaselineMAPPO
 
 
 class HanabiWorldStateWrapper(JaxMARLWrapper):

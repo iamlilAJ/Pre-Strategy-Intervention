@@ -102,6 +102,22 @@ Below are the base commands for each supported algorithm and environment. Simply
     python baselines/QLearning/qmix_pre.py +alg=qmix
     ```
   
+### Heterogeneous MPE Setting
+This experiment tests IQL in a scenario with heterogeneous agents, where one agent is significantly faster than the others. The agent speeds are controlled by the `accel` parameter in the configuration.
+
+```shell
+python baselines/QLearning/iql_pre.py +alg=heter_iql
+```
+
+To change the sprinting agent to the targeted agent: You can override the accel parameter on the command line.
+```shell
+python baselines/QLearning/iql_pre.py +alg=heter_iql alg.ENV_KWARGS.accel='[25.0, 5.0, 5.0]'
+```
+To run the baseline for this setting:
+
+```shell
+python baselines/QLearning/iql_pre.py +alg=baseline_heter_iql
+```
 ## Visualization of Learned Behavior
 
 

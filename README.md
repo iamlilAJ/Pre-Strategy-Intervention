@@ -118,6 +118,17 @@ To run the baseline for this setting:
 ```shell
 python baselines/QLearning/iql_pre.py +alg=baseline_heter_iql
 ```
+
+### Running 4-player version of Hanabi
+
+You can easily change the number of players by overriding the `num_agents` parameter on the command line.
+
+To run PQN-VDN with 4 players:
+
+```shell
+python baselines/QLearing/pqn_vdn_pre.py +alg=pqn alg.ENV_KWARGS.num_agents=4
+```
+
 ## Visualization of Learned Behavior
 
 

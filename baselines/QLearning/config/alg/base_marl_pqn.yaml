@@ -41,7 +41,7 @@
 "ENV_KWARGS": {
   "num_agents": 2,
   "train_pre_policy": False,
-  "intrinsic_reward_ratio": 0.02,
+  "intrinsic_reward_ratio": 0.0,
   "if_augment_obs": False,
   "convention_type": "save_5"
 }

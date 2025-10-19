@@ -152,3 +152,10 @@ If you use this work in your research, please cite the following paper.
   booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
   year={2025}
 }
+```
+
+## License and Acknowledgements
+
+This project is licensed under the Apache 2.0 License. 
+
+Our implementation is built upon the excellent [JaxMARL](https://github.com/FLAIROx/JaxMARL) library. We thank the original authors for their significant contributions to the community.

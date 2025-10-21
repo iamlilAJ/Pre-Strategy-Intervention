@@ -51,11 +51,11 @@ This project requires Python 3.10 and we recommend `conda` for environment manag
 
 ## Running Experiments
 
-To reproduce the main results from our paper, run our **Targeted Intervention** method against the **Standard MARL** and **Intrinsic Reward** baselines described below. All experiments are managed via command-line arguments using Hydra.
+To reproduce the main results from our paper, run our **Pre-Strategy Intervention** method against the **Standard MARL** and **Intrinsic Reward** baselines described below. All experiments are managed via command-line arguments using Hydra.
 
 Our experiments are organized around three main conditions which can be applied to most algorithms. You can select the condition by modifying the Hydra configuration name (`+alg=...`).
 
-* **Targeted Intervention (Our Method):** Use the base algorithm name.
+* **Pre-Strategy Intervention (Our Method):** Use the base algorithm name.
     * Example: `+alg=ippo`
 * **Standard MARL Baseline:** Add the `base_marl_` prefix to the algorithm name.
     * Example: `+alg=base_marl_ippo`

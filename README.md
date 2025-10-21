@@ -141,16 +141,15 @@ In this visualization, the red agent (our intervened agent) has learned a prefer
 
 If you use this work in your research, please cite the following paper.
 
-**Plain Text:**
-> Anjie Liu, Jianhong Wang, Samuel Kaski, Jun Wang, and Mengyue Yang. (2025). A Principle of Targeted Intervention for Multi-Agent Reinforcement Learning. *In The Thirty-ninth Annual Conference on Neural Information Processing Systems (NeurIPS)*.
-
 **BibTeX:**
 ```latex
-@inproceedings{liu2025targeted,
-  title={A Principle of Targeted Intervention for Multi-Agent Reinforcement Learning},
-  author={Liu, Anjie and Wang, Jianhong and Kaski, Samuel and Wang, Jun and Yang, Mengyue},
-  booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
-  year={2025}
+@misc{liu2025principle,
+    title={A Principle of Targeted Intervention for Multi-Agent Reinforcement Learning},
+    author={Anjie Liu and Jianhong Wang and Samuel Kaski and Jun Wang and Mengyue Yang},
+    year={2025},
+    eprint={2510.17697},
+    archivePrefix={arXiv},
+    primaryClass={cs.AI}
 }
 ```
 

@@ -1,6 +1,6 @@
 # A Principle of Targeted Intervention for Multi-Agent Reinforcement Learning
 
-This repository contains the official JAX implementation for the NeurIPS 2025 paper: *A Principle of Targeted Intervention in Multi-Agent Reinforcement Learning*.
+This repository contains the official JAX implementation for the NeurIPS 2025 paper: [A Principle of Targeted Intervention in Multi-Agent Reinforcement Learning](https://arxiv.org/abs/2510.17697).
 
 Our work introduces a principle for designing targeted interventions that guide multi-agent systems toward desirable outcomes, such as improved coordination and performance, without explicitly programming complex behaviors.
 

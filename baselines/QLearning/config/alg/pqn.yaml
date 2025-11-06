@@ -45,6 +45,7 @@
   "intrinsic_reward_ratio": 0.02,
   "if_augment_obs": True,
   "convention_type": "save_5",
+  "intervene_two_agents": False,
 }
 
 

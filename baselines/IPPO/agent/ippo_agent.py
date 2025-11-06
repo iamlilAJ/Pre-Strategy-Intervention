@@ -164,6 +164,61 @@ class PrePolicyIPPO(nn.Module):
         return pi, critic
 
 
+class GlobalPrePolicyIPPO(nn.Module):
+    action_dim: Sequence[int]
+    config: Dict
+    num_agents: int
+
+
+    def setup(self):
+        self.shared_mlp = nn.vmap(SharedMLP, in_axes=0, out_axes=0,
+                                  variable_axes={"params": 0},
+                                  split_rngs={"params": 0})(config=self.config)
+
+        self.gnn = nn.vmap(End2EndGCN, in_axes=0, out_axes=0,
+                           variable_axes={"params": 0},
+                           split_rngs={"params": 0})(config=self.config)
+
+
+        self.pre_policy_network = nn.vmap(PrePolicyMLP, in_axes=0, out_axes=0,
+                                          variable_axes={"params": 0},
+                                          split_rngs={"params": True})(
+            pre_policy_output_dim=self.config.get("PRE_POLICY_OUTPUT_DIM", 64),
+            pre_policy_hidden_dim=self.config.get("PRE_POLICY_HIDDEN_DIM", 128),
+        )
+
+        self.actor = nn.vmap(Actor, in_axes=0, out_axes=0,
+                             variable_axes={"params": 0},
+                             split_rngs={"params": 0})(action_dim=self.action_dim,
+                                                       config=self.config)
+
+        self.critic = nn.vmap(Critic, in_axes=0, out_axes=0,
+                              variable_axes={"params": 0},
+                              split_rngs={"params": 0})(config=self.config)
+
+
+
+    def __call__(self, x):
+        obs, dones, avail_actions = x
+
+        agent_embedding = self.shared_mlp(obs)
+
+        pre_policy_embedding = self.pre_policy_network(obs)
+
+        gnn_features = self.gnn(obs)
+
+        critic_input = jnp.concatenate([agent_embedding, pre_policy_embedding, gnn_features], axis=-1)
+
+        critic = self.critic(critic_input)
+
+        actor_input = (jnp.concatenate([agent_embedding, gnn_features], axis=-1),
+                       dones, avail_actions)
+
+        pi = self.actor(actor_input)
+
+        return pi, critic
+
+
 
 
 class BaselineIPPO(nn.Module):

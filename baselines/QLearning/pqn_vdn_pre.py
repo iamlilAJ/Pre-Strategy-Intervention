@@ -25,9 +25,8 @@ from jaxmarl.wrappers.baselines import (
     PrePolicyHanabiWrapper,
 )
 
-from jaxmarl.environments.overcooked import overcooked_layouts
 
-from agent.pqn_agent import PQNAgent, BaselinePQNAgent
+from agent.pqn_agent import PQNAgent, BaselinePQNAgent, GlobalPQNAgent
 
 
 
@@ -132,13 +131,23 @@ def make_train(config, env):
                 config=config
             )
         else:
-            network = PQNAgent(
-                action_dim=wrapped_env.max_action_space,
-                num_agents=config["ENV_KWARGS"]["num_agents"],
-                # num_proxy_agents=1,
-                config=config,
-                dueling=True
-        )
+            if config["ENV_KWARGS"]["intervene_two_agents"] is True:
+                network = GlobalPQNAgent(
+                    action_dim=wrapped_env.max_action_space,
+                    num_agents=config["ENV_KWARGS"]["num_agents"],
+                    # num_proxy_agents=1,
+                    config=config,
+                    dueling=True
+                )
+            else:
+                network = PQNAgent(
+                    action_dim=wrapped_env.max_action_space,
+                    num_agents=config["ENV_KWARGS"]["num_agents"],
+                    # num_proxy_agents=1,
+                    config=config,
+                    dueling=True
+                )
+
         print(network)
         def create_agent(rng):
             init_x = jnp.zeros((env.num_agents, 1, wrapped_env.obs_size))

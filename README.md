@@ -91,6 +91,14 @@ You can change the number of players by overriding the `num_agents` parameter.
     python baselines/QLearning/pqn_vdn_pre.py +alg=pqn alg.ENV_KWARGS.num_agents=4
     ```
 
+#### Global Pre-Strategy Intervention (GPSI)
+You can change the intervention scope by overriding the `intervene_two_agents` parameter.  For example:
+ ```shell
+  python baselines/QLearning/pqn_vdn_pre.py +alg=pqn alg.ENV_KWARGS.intervene_two_agents=True
+```
+
+     
+
 ### MPE Environment
 
 * **IQL:**

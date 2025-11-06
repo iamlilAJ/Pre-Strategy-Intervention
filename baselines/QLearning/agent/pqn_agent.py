@@ -137,6 +137,83 @@ class PQNAgent(nn.Module):
 
         return q_vals
 
+class GlobalPQNAgent(nn.Module):
+    action_dim: int
+    num_agents: int
+    config: Any
+    # num_proxy_agents: int = 1
+    init_scale: float = 1.0
+
+    dueling: bool = True  # Added dueling flag
+
+    if_augment_obs: bool = True
+
+    def setup(self):
+        # Initialize GNN
+
+        if self.num_agents == 2:
+            self.gnn = nn.vmap(End2EndGCN, in_axes=0, out_axes=0,
+                           variable_axes={"params": 0},
+                           split_rngs={"params": 0})(config=self.config)
+        elif self.num_agents == 4:
+            self.gnn = nn.vmap(End2EndGCN4Players, in_axes=0, out_axes=0,
+                               variable_axes={"params": 0},
+                               split_rngs={"params": 0})(config=self.config)
+        else:
+            raise NotImplementedError("This implementation only supports 2 or 4 agents.")
+
+        # Initialize MLPNetwork
+        self.agent_mlp = nn.vmap(MLPNetwork, in_axes=(0, None), out_axes=0,
+                                 variable_axes={"params": 0, "batch_stats": 0},
+                                 split_rngs={"params": True})(
+            action_dim=self.action_dim,
+            hidden_size=self.config.get('HIDDEN_SIZE', 512),
+            num_layers=self.config.get('MLP_NUM_LAYERS', 3),
+            norm_input=self.config.get('MLP_NORM_INPUT', False),
+            norm_type=self.config.get('MLP_NORM_TYPE', "layer_norm"),
+            dueling=False  # Dueling handled in IQLAgent
+        )
+
+        # Initialize PrePolicyNetwork
+        self.pre_policy_network = nn.vmap(PrePolicyMLP, in_axes=0, out_axes=0,
+                                          variable_axes={"params": 0},
+                                          split_rngs={"params": True})(
+            pre_policy_output_dim=self.config.get("PRE_POLICY_OUTPUT_DIM", 64),
+            pre_policy_hidden_dim=self.config.get("PRE_POLICY_HIDDEN_DIM", 128),
+        )
+
+        self.q_network = nn.vmap(QNetwork, in_axes=0, out_axes=0,
+                                 variable_axes={"params": 0,},
+                                 split_rngs={"params": True})(action_dim=self.action_dim, dueling=self.dueling)
+
+
+    def __call__(self, x, train=False):
+
+        original_obs = x[:, :, :-1] # remove last
+
+        agent_embedding = self.agent_mlp(original_obs, train)  # (num_agents, hidden_dim)
+
+        #
+        if self.if_augment_obs:
+            pre_policy_input = x
+        else:
+            pre_policy_input = original_obs
+
+        pre_policy_embedding = self.pre_policy_network(pre_policy_input)  # (num_agents, pre_policy_output_dim)
+
+        # Process observations through MLP for GNN input
+
+        # Generate graph embedding using GNN
+        gnn_features = self.gnn(x)  # (num_agents, GNN_EMBEDDING_DIM)
+
+        # Concatenate embeddings: [agent_embedding, gnn_features, pre_policy_embedding]
+        q_value_input = jnp.concatenate([agent_embedding, gnn_features, pre_policy_embedding], axis=-1)  # (num_agents, hidden_dim + GNN_EMBEDDING_DIM + pre_policy_output_dim)
+
+        # Dueling architecture
+        q_vals =self.q_network(q_value_input)
+
+        return q_vals
+
 
 
 class BaselinePQNAgent(nn.Module):

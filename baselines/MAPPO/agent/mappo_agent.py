@@ -130,6 +130,65 @@ class PrePolicyMAPPO(nn.Module):
 
         return pi, output_critic
 
+class GlobalPrePolicyMAPPO(nn.Module):
+    action_dim: Sequence[int]
+    config: Dict
+    num_agents: int
+
+
+    def setup(self):
+
+
+        self.gnn = nn.vmap(End2EndGCN, in_axes=0, out_axes=0,
+                           variable_axes={"params": 0},
+                           split_rngs={"params": 0})(config=self.config)
+
+
+        self.pre_policy_network = nn.vmap(PrePolicyMLP, in_axes=0, out_axes=0,
+                                          variable_axes={"params": 0},
+                                          split_rngs={"params": True})(
+            pre_policy_output_dim=self.config.get("PRE_POLICY_OUTPUT_DIM", 64),
+            pre_policy_hidden_dim=self.config.get("PRE_POLICY_HIDDEN_DIM", 128),
+        )
+
+        self.actor = nn.vmap(ActorFF, in_axes=0, out_axes=0,
+                             variable_axes={"params": 0},
+                             split_rngs={"params": 0})(action_dim=self.action_dim,
+                                                       config=self.config)
+
+        if self.config["SHARE_CRITIC"] is True:
+            self.critic = nn.vmap(CriticFF, in_axes=0, out_axes=0,
+                                  variable_axes={"params": None},
+                                  split_rngs={"params": False})(config=self.config)
+        else:
+            self.critic = nn.vmap(CriticFF, in_axes=0, out_axes=0,
+                                  variable_axes={"params": 0},
+                                  split_rngs={"params": 0})(config=self.config)
+
+
+    def __call__(self, x, global_obs):
+        obs, dones, avail_actions = x
+
+        pre_policy_embedding = self.pre_policy_network(obs)
+
+        gnn_features = self.gnn(obs)
+
+        critic_input = jnp.concatenate([global_obs, pre_policy_embedding, gnn_features], axis=-1)
+
+
+        output_critic = self.critic(critic_input)
+
+        if self.config["PRE_POLICY_EMD_INPUT_ACTOR"] is True:
+            actor_input = (jnp.concatenate([obs, gnn_features, pre_policy_embedding], axis=-1),
+                       dones, avail_actions)
+        else:
+            actor_input = (jnp.concatenate([obs, gnn_features], axis=-1),
+                       dones, avail_actions)
+
+        pi = self.actor(actor_input)
+
+        return pi, output_critic
+
 
 class BaselineMAPPO(nn.Module):
     action_dim: Sequence[int]

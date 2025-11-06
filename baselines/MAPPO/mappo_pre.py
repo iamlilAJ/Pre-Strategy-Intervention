@@ -23,7 +23,7 @@ import hydra
 from omegaconf import OmegaConf
 from functools import partial
 
-from agent.mappo_agent import PrePolicyMAPPO, BaselineMAPPO
+from agent.mappo_agent import PrePolicyMAPPO, BaselineMAPPO, GlobalPrePolicyMAPPO
 
 
 class HanabiWorldStateWrapper(JaxMARLWrapper):
@@ -85,12 +85,6 @@ def batchify(x: dict, agent_list):
 def unbatchify(x: jnp.ndarray, agent_list):
     return {a: x[i] for i, a in enumerate(agent_list)}
 
-# def process_world_state(x: dict, agent_number):
-#     global_obs = x["world_state"]
-#     print(global_obs)
-#     global_obs_expanded = jnp.expand_dims(global_obs, axis=0)
-#     return jnp.tile(global_obs_expanded, (agent_number, 1, 1, 1))
-
 
 def make_train(config):
     env = jaxmarl.make(config["ENV_NAME"], **config["ENV_KWARGS"])
@@ -125,9 +119,14 @@ def make_train(config):
             )
             cr_init_x = jnp.zeros((len(env.agents), 1, config["NUM_ENVS"],  658*len(env.agents)))
         else:
-            network = PrePolicyMAPPO(env.action_space(env.agents[0]).n, config=config,
-                                     num_agents=len(env.agents)
-                                     )
+            if config["ENV_KWARGS"]["intervene_two_agents"] is True:
+                network = GlobalPrePolicyMAPPO(env.action_space(env.agents[0]).n, config=config,
+                                         num_agents=len(env.agents)
+                                         )
+            else:
+                network = PrePolicyMAPPO(env.action_space(env.agents[0]).n, config=config,
+                                         num_agents=len(env.agents)
+                                         )
             init_x = (
                 jnp.zeros(
                     (len(env.agents), 1, config["NUM_ENVS"], env.observation_space(env.agents[0]).n + 1)

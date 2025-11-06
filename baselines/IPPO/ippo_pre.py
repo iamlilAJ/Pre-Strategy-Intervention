@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 import hydra
 from omegaconf import OmegaConf
 
-from agent.ippo_agent import PrePolicyIPPO, BaselineIPPO
+from agent.ippo_agent import PrePolicyIPPO, BaselineIPPO, GlobalPrePolicyIPPO
 
 class Transition(NamedTuple):
     done: jnp.ndarray
@@ -69,7 +69,14 @@ def make_train(config):
             network = BaselineIPPO(env.action_space(env.agents[0]).n, config=config)
             augmented_feature_size=0
         else:
-            network = PrePolicyIPPO(env.action_space(env.agents[0]).n, config=config, num_agents=len(env.agents))
+            if config["ENV_KWARGS"]["intervene_two_agents"] is True:
+                network = GlobalPrePolicyIPPO(env.action_space(env.agents[0]).n, config=config,
+                                         num_agents=len(env.agents)
+                                         )
+            else:
+                network = PrePolicyIPPO(env.action_space(env.agents[0]).n, config=config,
+                                         num_agents=len(env.agents)
+                                         )
             augmented_feature_size=1
         rng, _rng = jax.random.split(rng)
 

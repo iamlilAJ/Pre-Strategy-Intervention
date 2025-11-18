@@ -19,7 +19,7 @@ This project requires Python 3.10 and we recommend `conda` for environment manag
 
 1.  **Clone the repository:**
     ```shell
-    git clone [https://github.com/iamlilAJ/Pre-Strategy-Intervention.git](https://github.com/iamlilAJ/Pre-Strategy-Intervention.git)
+    git clone https://github.com/iamlilAJ/Pre-Strategy-Intervention.git
     cd Pre-Strategy-Intervention
     ```
 
@@ -34,7 +34,7 @@ This project requires Python 3.10 and we recommend `conda` for environment manag
     * **For NVIDIA GPU Users (Recommended):**
         This command installs the exact versions of JAX, a CUDA-enabled jaxlib, and cuDNN that are compatible with this project. The `-f` flag is crucial as it directs `pip` to the official JAX repository to find the GPU-specific packages.
         ```shell
-        pip install jax==0.4.25 jaxlib==0.4.25 nvidia-cudnn-cu12==8.9.2.26 -f [https://storage.googleapis.com/jax-releases/jax_cuda_releases.html](https://storage.googleapis.com/jax-releases/jax_cuda_releases.html)
+        pip install jax==0.4.25 jaxlib==0.4.25 nvidia-cudnn-cu12==8.9.2.26 -f https://storage.googleapis.com/jax-releases/jax_cuda_releases.html
         ```
 
     * **For CPU-Only Users:**
